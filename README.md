@@ -73,6 +73,6 @@ npm run dev
 4. `./gradlew bootJar` 결과물을 `/opt/blog/blog-backend.jar` 로 배치, `deploy/systemd/blog-backend.service` 등록
 5. `npm run build` 결과물 `frontend/dist/` → `/var/www/blog`
 6. `deploy/nginx/*.conf` 적용 (`blog-proxy.conf`는 `/etc/nginx/snippets/`)
-7. 테이블은 백엔드 기동 시 Flyway가 자동 생성 (`backend/src/main/resources/db/migration`)
+7. 테이블은 백엔드 기동 시 Flyway가 자동 생성 (`db/migration/oracle`, 로컬은 `db/migration/h2` — 스키마 변경 시 두 곳 모두 수정)
 
 HTTPS 적용 전 HTTP로 테스트할 때는 `COOKIE_SECURE=false`로 두어야 로그인이 됩니다.
