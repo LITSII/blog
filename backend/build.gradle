@@ -48,3 +48,11 @@ tasks.named('test') {
 tasks.named('jar') {
     enabled = false
 }
+
+tasks.named('test') {
+    testLogging {
+        events 'failed'
+        exceptionFormat 'full'
+        showCauses true
+    }
+}
