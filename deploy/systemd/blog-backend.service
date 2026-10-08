@@ -1,0 +1,28 @@
+# /etc/systemd/system/blog-backend.service  (샘플)
+# 환경변수는 /etc/blog/backend.env (권한 600, root:blog) 에 둔다. 저장소에 커밋 금지.
+[Unit]
+Description=Blog backend (Spring Boot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=blog
+Group=blog
+WorkingDirectory=/opt/blog
+EnvironmentFile=/etc/blog/backend.env
+ExecStart=/usr/bin/java -Xms128m -Xmx384m -jar /opt/blog/blog-backend.jar --spring.profiles.active=prod
+Restart=on-failure
+RestartSec=5
+
+# 하드닝
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/opt/blog
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target
