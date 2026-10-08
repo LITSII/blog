@@ -3,6 +3,7 @@ package com.litsii.blog.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -32,14 +33,13 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                            SecurityContextRepository contextRepository,
-                                            CorsConfigurationSource corsSource) throws Exception {
+                                            SecurityContextRepository contextRepository) throws Exception {
         // 프론트(JS)가 XSRF-TOKEN 쿠키를 읽어 X-XSRF-TOKEN 헤더로 보내는 방식
         var csrfHandler = new CsrfTokenRequestAttributeHandler();
         csrfHandler.setCsrfRequestAttributeName(null); // 지연 로딩 비활성 → 매 요청 쿠키 보장
 
         http
-            .cors(c -> c.configurationSource(corsSource))
+            .cors(Customizer.withDefaults()) // 'corsConfigurationSource' 빈을 이름으로 사용
             .csrf(csrf -> csrf
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                     .csrfTokenRequestHandler(csrfHandler))
