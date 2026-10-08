@@ -32,18 +32,13 @@ jobs:
           esc() { sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}1' | sed -e 's/\r/%0D/g'; }
           msg=$(grep -E -A12 'What went wrong|error:|FAILED|Caused by' build.log | head -60 | esc)
           echo "::error title=Gradle build::${msg}"
-          for f in build/test-results/test/*.xml; do
-            [ -f "$f" ] || continue
-            if grep -q '<failure' "$f"; then
-              detail=$(grep -E -A8 '<failure|Caused by' "$f" | head -40 | esc)
-              echo "::error title=$(basename "$f")::${detail}"
-            fi
-          done
-      - uses: actions/upload-artifact@v4
-        with:
-          name: backend-jar
-          path: backend/build/libs/*.jar
-          retention-days: 7
+          f=$(grep -l '<failure' build/test-results/test/*.xml 2>/dev/null | head -1)
+          if [ -n "$f" ]; then
+            detail=$(grep -o 'message="[^"]*"' "$f" | head -1 | cut -c1-3000 | esc)
+            causes=$(grep -E 'Caused by' "$f" | sort -u | head -15 | cut -c1-500 | esc)
+            echo "::error title=Test failure::${detail}%0A${causes}"
+          fi
+          exit 0
 
   frontend:
     runs-on: ubuntu-latest
